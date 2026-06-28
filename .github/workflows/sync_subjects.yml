@@ -33,6 +33,11 @@ jobs:
       - name: Install deps
         run: pip install gspread google-auth
 
+      - name: Debug secret length
+        run: python3 -c "import os; v=os.environ.get('SA_B64',''); print('length:', len(v)); print('first 20 chars:', v[:20])"
+        env:
+          SA_B64: ${{ secrets.GCP_SA_JSON_B64 }}
+
       - name: Write service-account file (from base64 secret)
         run: python3 -c "import base64,os; open('sa.json','wb').write(base64.b64decode(os.environ['SA_B64']))"
         env:
