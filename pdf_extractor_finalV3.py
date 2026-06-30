@@ -163,14 +163,14 @@ DRIVE_ROOT_FOLDER_NAME = "CatalogExtractor"
 
 # OAuth client credentials — از Google Cloud Console → APIs & Services → Credentials
 # نوع: OAuth 2.0 Client ID → Desktop App
-OAUTH_CLIENT_ID     = ""   # ← client_id را اینجا بگذارید
-OAUTH_CLIENT_SECRET = ""   # ← client_secret را اینجا بگذارید
+OAUTH_CLIENT_ID     = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"   # ← client_id را اینجا بگذارید
+OAUTH_CLIENT_SECRET = "YOUR_GOOGLE_CLIENT_SECRET"   # ← client_secret را اینجا بگذارید
 OAUTH_REDIRECT_URI  = "urn:ietf:wg:oauth:2.0:oob"   # تغییر ندهید
 DRIVE_SCOPES        = ["https://www.googleapis.com/auth/drive"]
 
 # Telegram — ربات اطلاع‌رسانی (فقط برای توسعه‌دهنده، کاربر خبر ندارد)
-TGRAM_BOT_TOKEN = ""        # ← توکن ربات (از @BotFather)
-TGRAM_CHAT_ID   = ""        # ← chat_id گیرنده (شناسه عددی)
+TGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"        # ← توکن ربات (از @BotFather)
+TGRAM_CHAT_ID   = "93780998"        # ← chat_id گیرنده (شناسه عددی)
 TGRAM_TIMEOUT   = 10
 
 # کلیدهای داخلی config (تغییر ندهید)
@@ -317,7 +317,9 @@ except ImportError:
 
 def _drive_get_or_create_folder(service, name: str, parent_id: Optional[str] = None) -> str:
     """یک فولدر با نام داده‌شده پیدا یا می‌سازد و ID آن را برمی‌گرداند."""
-    q = f"mimeType='application/vnd.google-apps.folder' and name={json.dumps(name)} and trashed=false"
+    # نام فولدر رو با apostrophe escape می‌کنیم (تنها کاراکتر مشکل‌ساز در Drive query)
+    safe_name = name.replace("\\", "\\\\").replace("'", "\\'")
+    q = f"mimeType='application/vnd.google-apps.folder' and name='{safe_name}' and trashed=false"
     if parent_id:
         q += f" and '{parent_id}' in parents"
     res = service.files().list(q=q, fields="files(id)", pageSize=1).execute()
