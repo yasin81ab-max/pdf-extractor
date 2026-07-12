@@ -14,4 +14,3 @@ __pycache__/
 *.json
 !config.example.json
 !version.json
-!subjects.json
